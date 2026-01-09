@@ -1,0 +1,216 @@
+# class data 
+class Mahasiswa:
+        def __init__(self, nim, nama, jurusan, ipk):
+            self.__nim = nim
+            self.__nama = nama
+            self.__jurusan = jurusan
+            self.__ipk = ipk
+    
+    # Getter methods
+def get_nim(self):
+        return self.__nim
+    
+def get_nama(self):
+        return self.__nama
+    
+def get_jurusan(self):
+        return self.__jurusan
+    
+def get_ipk(self):
+        return self.__ipk
+    
+def get_predikat(self):
+        """Menentukan predikat berdasarkan IPK"""
+        if self.__ipk >= 3.75:
+            return "Cumlaude"
+        elif self.__ipk >= 3.50:
+            return "Sangat Memuaskan"
+        elif self.__ipk >= 3.00:
+            return "Memuaskan"
+        else:
+            return "Cukup"
+
+
+# ==================== CLASS PROCESS ====================
+class MahasiswaManager:
+    """Class untuk mengelola data mahasiswa"""
+    
+    def __init__(self):
+        self.__daftar_mahasiswa = []
+    
+    def tambah_mahasiswa(self, mahasiswa):
+        """Menambahkan mahasiswa ke daftar"""
+        self.__daftar_mahasiswa.append(mahasiswa)
+    
+    def get_semua_mahasiswa(self):
+        """Mengambil semua data mahasiswa"""
+        return self.__daftar_mahasiswa
+    
+    def cari_mahasiswa(self, nim):
+        """Mencari mahasiswa berdasarkan NIM"""
+        for mhs in self.__daftar_mahasiswa:
+            if mhs.get_nim() == nim:
+                return mhs
+        return None
+
+
+class Validator:
+    """Class untuk validasi input"""
+    
+    @staticmethod
+    def validasi_nim(nim):
+        """Validasi NIM harus berupa angka"""
+        if not nim.isdigit():
+            raise ValueError("NIM harus berupa angka!")
+        if len(nim) < 5:
+            raise ValueError("NIM minimal 5 digit!")
+        return nim
+    
+    @staticmethod
+    def validasi_nama(nama):
+        """Validasi nama tidak boleh kosong"""
+        if not nama.strip():
+            raise ValueError("Nama tidak boleh kosong!")
+        return nama.strip()
+    
+    @staticmethod
+    def validasi_jurusan(jurusan):
+        """Validasi jurusan tidak boleh kosong"""
+        if not jurusan.strip():
+            raise ValueError("Jurusan tidak boleh kosong!")
+        return jurusan.strip()
+    
+    @staticmethod
+    def validasi_ipk(ipk_str):
+        """Validasi IPK harus berupa angka 0-4"""
+        try:
+            ipk = float(ipk_str)
+            if ipk < 0 or ipk > 4:
+                raise ValueError("IPK harus antara 0.00 - 4.00!")
+            return ipk
+        except ValueError:
+            raise ValueError("IPK harus berupa angka!")
+
+
+# ==================== CLASS VIEW ====================
+class ViewMahasiswa:
+    """Class untuk menampilkan data mahasiswa"""
+    
+    def tampilkan_header(self):
+        """Menampilkan header program"""
+        print("\n" + "="*70)
+        print("PROGRAM MANAJEMEN DATA MAHASISWA".center(70))
+        print("="*70)
+    
+    def tampilkan_menu(self):
+        """Menampilkan menu pilihan"""
+        print("\nMenu:")
+        print("1. Tambah Data Mahasiswa")
+        print("2. Tampilkan Semua Data")
+        print("3. Cari Mahasiswa (berdasarkan NIM)")
+        print("4. Keluar")
+        print("-" * 70)
+    
+    def tampilkan_tabel(self, daftar_mahasiswa):
+        """Menampilkan data mahasiswa dalam bentuk tabel"""
+        if not daftar_mahasiswa:
+            print("\nTidak ada data mahasiswa!")
+            return
+        
+        print("\n" + "="*100)
+        print(f"{'NIM':<15} {'Nama':<25} {'Jurusan':<20} {'IPK':<8} {'Predikat':<20}")
+        print("="*100)
+        
+        for mhs in daftar_mahasiswa:
+            print(f"{mhs.get_nim():<15} {mhs.get_nama():<25} {mhs.get_jurusan():<20} "
+                  f"{mhs.get_ipk():<8.2f} {mhs.get_predikat():<20}")
+        
+        print("="*100)
+    
+    def tampilkan_detail_mahasiswa(self, mahasiswa):
+        """Menampilkan detail satu mahasiswa"""
+        if mahasiswa is None:
+            print("\nData mahasiswa tidak ditemukan!")
+            return
+        
+        print("\n" + "-"*50)
+        print("DETAIL MAHASISWA")
+        print("-"*50)
+        print(f"NIM      : {mahasiswa.get_nim()}")
+        print(f"Nama     : {mahasiswa.get_nama()}")
+        print(f"Jurusan  : {mahasiswa.get_jurusan()}")
+        print(f"IPK      : {mahasiswa.get_ipk():.2f}")
+        print(f"Predikat : {mahasiswa.get_predikat()}")
+        print("-"*50)
+
+
+# ==================== MAIN PROGRAM ====================
+def main():
+    manager = MahasiswaManager()
+    view = ViewMahasiswa()
+    validator = Validator()
+    
+    view.tampilkan_header()
+    
+    while True:
+        view.tampilkan_menu()
+        
+        try:
+            pilihan = input("Pilih menu (1-4): ").strip()
+            
+            if pilihan == "1":
+                # Input data mahasiswa
+                print("\n--- Tambah Data Mahasiswa ---")
+                
+                try:
+                    nim = input("Masukkan NIM: ").strip()
+                    nim = validator.validasi_nim(nim)
+                    
+                    nama = input("Masukkan Nama: ")
+                    nama = validator.validasi_nama(nama)
+                    
+                    jurusan = input("Masukkan Jurusan: ")
+                    jurusan = validator.validasi_jurusan(jurusan)
+                    
+                    ipk_str = input("Masukkan IPK (0.00-4.00): ").strip()
+                    ipk = validator.validasi_ipk(ipk_str)
+                    
+                    # Buat objek mahasiswa dan tambahkan
+                    mahasiswa = Mahasiswa(nim, nama, jurusan, ipk)
+                    manager.tambah_mahasiswa(mahasiswa)
+                    
+                    print("\n✓ Data mahasiswa berhasil ditambahkan!")
+                    
+                except ValueError as e:
+                    print(f"\n✗ Error: {e}")
+            
+            elif pilihan == "2":
+                # Tampilkan semua data
+                print("\n--- Daftar Semua Mahasiswa ---")
+                view.tampilkan_tabel(manager.get_semua_mahasiswa())
+            
+            elif pilihan == "3":
+                # Cari mahasiswa
+                print("\n--- Cari Mahasiswa ---")
+                nim_cari = input("Masukkan NIM yang dicari: ").strip()
+                mahasiswa = manager.cari_mahasiswa(nim_cari)
+                view.tampilkan_detail_mahasiswa(mahasiswa)
+            
+            elif pilihan == "4":
+                # Keluar
+                print("\nTerima kasih telah menggunakan program ini!")
+                break
+            
+            else:
+                print("\n✗ Pilihan tidak valid! Silakan pilih 1-4.")
+        
+        except KeyboardInterrupt:
+            print("\n\nProgram dihentikan oleh user.")
+            break
+        except Exception as e:
+            print(f"\n✗ Terjadi kesalahan: {e}")
+
+
+# Jalankan program
+if __name__ == "__main__":
+    main()
